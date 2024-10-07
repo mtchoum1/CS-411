@@ -4,7 +4,7 @@ from wildlife_tracker.habitat_management.habitat import Habitat
 
 class MigrationPath:
 
-    def __init__(self, path_id: int, size: int, species: str, start_date: str, start_location: Habitat, status: str = "Scheduled") -> None:
+    def __init__(self, start_location: Habitat, status: str = "Scheduled") -> None:
 
         pass
 
