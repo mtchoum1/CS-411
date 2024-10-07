@@ -6,8 +6,10 @@ from wildlife_tracker.migration_tracking.migration_path import MigrationPath
 
 class Migration:
 
-    def __init__(self, migration_id: int, migration_path: MigrationPath, start_date: str, environment_type: str, geographic_area: str, current_date: str, destination: Habitat, species: str, current_location: str, path_id: int, size: int, duration: Optional[int] = None, status: str = "Scheduled") -> None:
-        pass
+    def __init__(self, migration_id: int, migration_path: MigrationPath, current_location: str) -> None:
+        self.migration_id = migration_id
+        self.migration_path = migration_path
+        self.current_location = current_location
 
     def update_migration_details(migration_id: int, **kwargs: Any) -> None:
         pass
