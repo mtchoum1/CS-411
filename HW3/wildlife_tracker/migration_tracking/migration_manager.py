@@ -8,6 +8,9 @@ class MigrationManager:
     def __init__(self) -> None:
         migrations: dict[int, Migration] = {}
         paths: dict[int, MigrationPath] = {}
+
+
+    def remove_migration_path(path_id: int) -> None:
         pass
 
     def get_migration_by_id(migration_id: int) -> Migration:
@@ -41,4 +44,10 @@ class MigrationManager:
         pass
 
     def get_migrations_by_status(status: str) -> list[Migration]:
+        pass
+
+    def cancel_migration(migration_id: int) -> None:
+        pass
+
+    def schedule_migration(migration_path: MigrationPath) -> None:
         pass
