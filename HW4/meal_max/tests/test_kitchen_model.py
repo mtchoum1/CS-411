@@ -1,7 +1,7 @@
 import pytest
 import sqlite3
 from unittest.mock import Mock, patch
-from kitchen_model import Meal, create_meal, delete_meal, get_leaderboard, get_meal_by_id, get_meal_by_name, update_meal_stats
+from meal_max.models.kitchen_model import Meal, create_meal, delete_meal, get_leaderboard, get_meal_by_id, get_meal_by_name, update_meal_stats
 
 ######################################################
 #
