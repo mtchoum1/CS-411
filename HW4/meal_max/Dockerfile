@@ -14,7 +14,7 @@ COPY .env /app/.env
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install SQLite3
-RUN apt-get update && apt-get install -y sqlite3
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
 
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
@@ -28,4 +28,6 @@ VOLUME ["/app/db"]
 EXPOSE 5000
 
 # Run the entrypoint script when the container launches
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 CMD ["/app/entrypoint.sh"]
