@@ -144,7 +144,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[Dict[str, Any]]:
                 'difficulty': row[4],
                 'battles': row[5],
                 'wins': row[6],
-                'win_pct': round(row[7] * 100, 1)  # Convert to percentage
+                'win_pct': round(row[7], 1)  # Convert to percentage
             }
             leaderboard.append(meal)
 

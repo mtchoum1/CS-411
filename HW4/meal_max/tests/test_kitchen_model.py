@@ -1,6 +1,7 @@
 import pytest
+from contextlib import contextmanager
+import re
 import sqlite3
-from unittest.mock import Mock, patch
 from meal_max.models.kitchen_model import Meal, create_meal, delete_meal, get_leaderboard, get_meal_by_id, get_meal_by_name, update_meal_stats
 
 ######################################################
@@ -26,11 +27,11 @@ def mock_cursor(mocker):
     mock_conn.commit.return_value = None
 
     # Mock the get_db_connection context manager
-    @patch("kitchen_model.get_db_connection")
+    @contextmanager
     def mock_get_db_connection():
         yield mock_conn
 
-    mocker.patch("kitchen_model.get_db_connection", mock_get_db_connection)
+    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
     return mock_cursor
 
 ######################################################
@@ -193,6 +194,7 @@ def test_update_meal_stats_loss(mock_cursor):
 
 def test_update_meal_stats_invalid_result(mock_cursor):
     """Test error handling for invalid result type in meal stats update."""
+    mock_cursor.fetchone.return_value = [False]  # Simulate that the meal exists and is not deleted.
     with pytest.raises(ValueError, match="Invalid result: invalid. Expected 'win' or 'loss'."):
         update_meal_stats(1, "invalid")
 
