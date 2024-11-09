@@ -11,14 +11,33 @@ configure_logger(logger)
 
 
 class BattleModel:
+    """
+    A class to manage battles of prepared meals
 
+    Attributes:
+        combatants(List[Meal]): The list of meals in battle
+    """
+    
     def __init__(self):
+        """
+        Initializes the BattleModel with an empty combatants list
+        """
         self.combatants: List[Meal] = []
 
     def battle(self) -> str:
+        """
+        Completes the battle between combatants.
+
+        Side-effects:
+            Updates the combatants list to 1 by removing losing combatant
+            Updates combatants stats
+
+        Raises:
+            ValueError: If a combatant list doesn't have 2 combatants
+        """
         logger.info("Two meals enter, one meal leaves!")
 
-        if len(self.combatants) < 2:
+        if self.get_combatants_length < 2:
             logger.error("Not enough combatants to start a battle.")
             raise ValueError("Two combatants must be prepped for a battle.")
 
@@ -69,10 +88,29 @@ class BattleModel:
         return winner.meal
 
     def clear_combatants(self):
+        """
+        Clears all combatants from the battle. If the battle is already empty, logs a warning.
+        """
+
         logger.info("Clearing the combatants list.")
+        if self.get_combatants_length == 0:
+            logger.warning("Clearing an empty combatants list")
         self.combatants.clear()
 
     def get_battle_score(self, combatant: Meal) -> float:
+        """
+        Calculates combatants Score
+
+        Args:
+            combatant_data (Meal): the combatant to add to the combatant list.
+
+        Raises:
+            TypeError: If the combatant_data is not a valid Meal instance.
+        """
+        if not isinstance(combatant, Meal):
+            logger.error("combatant_data is not a valid Meal")
+            raise TypeError("combatant_data is not a valid Meal")
+        
         difficulty_modifier = {"HIGH": 1, "MED": 2, "LOW": 3}
 
         # Log the calculation process
@@ -88,10 +126,28 @@ class BattleModel:
         return score
 
     def get_combatants(self) -> List[Meal]:
+        """
+        Returns a list of all combatant in the combatants list.
+        """
+        self.check_if_empty()
         logger.info("Retrieving current list of combatants.")
         return self.combatants
 
     def prep_combatant(self, combatant_data: Meal):
+        """
+        Adds a combatant to the combantant list.
+
+        Args:
+            combatant_data (Meal): the combatant to add to the combatant list.
+
+        Raises:
+            TypeError: If the combatant_data is not a valid Meal instance.
+            ValueError: If a combatant list is full
+        """
+        if not isinstance(combatant_data, Meal):
+            logger.error("combatant_data is not a valid Meal")
+            raise TypeError("combatant_data is not a valid Meal")
+
         if len(self.combatants) >= 2:
             logger.error("Attempted to add combatant '%s' but combatants list is full", combatant_data.meal)
             raise ValueError("Combatant list is full, cannot add more combatants.")
@@ -103,3 +159,20 @@ class BattleModel:
 
         # Log the current state of combatants
         logger.info("Current combatants list: %s", [combatant.meal for combatant in self.combatants])
+    
+    def check_if_empty(self) -> None:
+        """
+        Checks if the combatant is empty, logs an error, and raises a ValueError if it is.
+
+        Raises:
+            ValueError: If the combatant is empty.
+        """
+        if not self.combatants:
+            logger.error("Combatant is empty")
+            raise ValueError("Combatant is empty")
+    
+    def get_combatants_length(self) -> int:
+        """
+        Returns the number of combatant in the combatants list.
+        """
+        return len(self.combatants)
