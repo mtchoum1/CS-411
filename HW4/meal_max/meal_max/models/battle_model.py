@@ -37,7 +37,7 @@ class BattleModel:
         """
         logger.info("Two meals enter, one meal leaves!")
 
-        if self.get_combatants_length < 2:
+        if len(self.combatants) < 2:
             logger.error("Not enough combatants to start a battle.")
             raise ValueError("Two combatants must be prepped for a battle.")
 
@@ -93,7 +93,7 @@ class BattleModel:
         """
 
         logger.info("Clearing the combatants list.")
-        if self.get_combatants_length == 0:
+        if len(self.combatants) == 0:
             logger.warning("Clearing an empty combatants list")
         self.combatants.clear()
 
@@ -170,9 +170,4 @@ class BattleModel:
         if not self.combatants:
             logger.error("Combatant is empty")
             raise ValueError("Combatant is empty")
-    
-    def get_combatants_length(self) -> int:
-        """
-        Returns the number of combatant in the combatants list.
-        """
-        return len(self.combatants)
+
