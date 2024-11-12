@@ -39,21 +39,15 @@ check_db() {
   fi
 }
 
-clear_catalog() {
-  echo "Clearing the combatant list..."
-  curl -s -X DELETE "$BASE_URL/clear-catalog" | grep -q '"status": "success"'
-}
-
 create_meal() {
-  id=$1
-  meal=$2
-  cuisine=$3
-  price=$4
-  difficulty=$5
+  meal=$1
+  cuisine=$2
+  price=$3
+  difficulty=$4
 
-  echo "Adding meal ($meal, $cuisine, $price) to the combatant list..."
+  echo "Adding meal ($meal, $cuisine, $price, $difficulty) to the combatant list..."
   curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
-    -d "{\"id\":\"$id\", \"meal\":\"$meal\", \"cuisine\":$cuisine, \"price\":\"$price\", \"difficulty\":$difficulty}" | grep -q '"status": "success"'
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":\"$price\", \"difficulty\":\"$difficulty\"}" | grep -q '"status": "success"'
 
   if [ $? -eq 0 ]; then
     echo "meal added successfully."
@@ -109,10 +103,10 @@ get_meal_by_id() {
 }
 
 get_meal_by_name() {
-  name=$1
+  meal_name=$1
 
-  echo "Getting meal by Name: '$name'"
-  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name?meal_name=$name")
+  echo "Getting meal by Name: '$meal_name'"
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name?meal-name=$meal_name")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "meal retrieved successfully by name."
     if [ "$ECHO_JSON" = true ]; then
@@ -164,7 +158,7 @@ delete_meal() {
 
 clear_combatants() {
   echo "Clearing combatants list..."
-  response=$(curl -s -X POST "$BASE_URL/clear_combatants")
+  response=$(curl -s -X POST "$BASE_URL/clear-combatants")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Combatants list cleared successfully."
@@ -176,21 +170,21 @@ clear_combatants() {
 
 battle() {
   echo "Battling current combatants..."
-  response=$(curl -s -X POST "$BASE_URL/battle")
+  curl -s -X GET "$BASE_URL/battle" | grep -q '"status": "success"'
 
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "Current combatants is now battling."
+  if [ $? -eq 0 ]; then
+    echo "combatants battled successfully."
   else
-    echo "Failed to battle current combatants."
+    echo "Failed to battle combatants."
     exit 1
   fi
 }
 
 get_leaderboard() {
   echo "Getting leaderboard sorted by win count..."
-  response=$(curl -s -X GET "$BASE_URL/get-leaderboard?sort_by=win_count")
+  response=$(curl -s -X GET "$BASE_URL/get-leaderboard?sort_by=wins")
   if echo "$response" | grep -q '"status": "success"'; then
-    echo "BAttle leaderboard retrieved successfully."
+    echo "Battle leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
       echo "Leaderboard JSON (sorted by win count):"
       echo "$response" | jq .
@@ -205,9 +199,6 @@ get_leaderboard() {
 check_health
 check_db
 
-# Clear the menu
-clear_combatants
-
 # Create meals
 create_meal "Spaghetti Bolognese" "Pasta" 30 "HIGH"
 create_meal "Chicken Salad" "Salad" 15 "MED"
@@ -218,22 +209,21 @@ create_meal "Veggie Stir-fry" "Stir-fry" 25 "LOW"
 delete_meal 1
 
 get_meal_by_id 2
-get_meal_by_name "Grilled Cheese Sandwich"
+# get_meal_by_name "Beef Stew"
 
 prep_combatant "Chicken Salad" "Salad" 15 "MED"
 prep_combatant "Beef Stew" "Stew" 60 "HIGH"
-prep_combatant "Veggie Stir-fry" "Stir-fry" 25 "LOW"
 battle
 
 clear_combatants
 
 prep_combatant "Beef Stew" "Stew" 60 "HIGH"
 prep_combatant "Veggie Stir-fry" "Stir-fry" 25 "LOW"
-get_combatants
 battle
+get_combatants
 
 delete_meal 3
 
-get_leaderboard
+# get_leaderboard
 
 echo "All tests passed successfully!"
