@@ -102,23 +102,6 @@ get_meal_by_id() {
   fi
 }
 
-get_meal_by_name() {
-  meal_name=$1
-
-  echo "Getting meal by Name: '$meal_name'"
-  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name?meal-name=$meal_name")
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "meal retrieved successfully by name."
-    if [ "$ECHO_JSON" = true ]; then
-      echo "meal JSON by name:"
-      echo "$response" | jq .
-    fi
-  else
-    echo "Failed to get meal by name."
-    exit 1
-  fi
-}
-
 prep_combatant() {
   meal=$1
   cuisine=$2
@@ -181,12 +164,13 @@ battle() {
 }
 
 get_leaderboard() {
-  echo "Getting leaderboard sorted by win count..."
-  response=$(curl -s -X GET "$BASE_URL/get-leaderboard?sort_by=wins")
+  sort_by=$1
+  echo "Getting leaderboard sorted by $sort_by..."
+  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort_by=$sort_by")
   if echo "$response" | grep -q '"status": "success"'; then
-    echo "Battle leaderboard retrieved successfully."
+    echo "Leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
-      echo "Leaderboard JSON (sorted by win count):"
+      echo "Leaderboard JSON:"
       echo "$response" | jq .
     fi
   else
@@ -195,11 +179,9 @@ get_leaderboard() {
   fi
 }
 
-# Health checks
 check_health
 check_db
 
-# Create meals
 create_meal "Spaghetti Bolognese" "Pasta" 30 "HIGH"
 create_meal "Chicken Salad" "Salad" 15 "MED"
 create_meal "Grilled Cheese Sandwich" "Sandwich" 10 "MED"
@@ -209,7 +191,6 @@ create_meal "Veggie Stir-fry" "Stir-fry" 25 "LOW"
 delete_meal 1
 
 get_meal_by_id 2
-# get_meal_by_name "Beef Stew"
 
 prep_combatant "Chicken Salad" "Salad" 15 "MED"
 prep_combatant "Beef Stew" "Stew" 60 "HIGH"
@@ -224,6 +205,6 @@ get_combatants
 
 delete_meal 3
 
-# get_leaderboard
+get_leaderboard "wins"
 
 echo "All tests passed successfully!"
